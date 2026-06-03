@@ -1,49 +1,49 @@
-----------------------------------------
-问题：RAG 的核心是什么？
-命中的资料来源：rag_intro.txt、study_notes.md
-回答结果：根据资料，RAG 的核心是先查资料再回答。相关依据包括：RAG 的核心是先查资料再回答；RAG 是一种让系统先检索资料再回答问题的方法；RAG 的英文全称是 Retrieval-Augmented Generation，意思是检索增强生成。
-----------------------------------------
-问题：AI 幻觉是什么？
-命中的资料来源：ai_hallucination.txt、study_notes.md
-回答结果：根据资料，AI 幻觉是指模型生成看似合理但没有依据的内容。相关依据包括：AI 幻觉是指模型生成看似合理但没有依据的内容；AI 胡说通常指模型生成了看起来合理但缺少事实依据的内容；AI 为什么会胡说，常见原因包括知识不足、上下文不完整和没有可靠资料约束。
-----------------------------------------
-问题：防止 AI 胡说的关键是什么？
-命中的资料来源：ai_hallucination.txt、study_notes.md
-回答结果：根据资料，防止 AI 胡说的关键是让回答有来源、有依据、可检查。相关依据包括：防止 AI 胡说的关键是让回答有来源、有依据、可检查；AI 胡说通常指模型生成了看起来合理但缺少事实依据的内容；AI 为什么会胡说，常见原因包括知识不足、上下文不完整和没有可靠资料约束。
-用户问题：RAG 的核心是什么？
+﻿用户问题：RAG 的核心是什么？
 是否命中资料：是
-命中来源文件：rag_intro.txt、study_notes.md
-命中关键词：rag、核心
-匹配分数：study_notes.md=6、rag_intro.txt=4、rag_intro.txt=4
-最终回答：根据已检索到的资料，当前问题可以这样理解：RAG 的核心是先查资料再回答。依据主要来自：rag_intro.txt、study_notes.md 文件。
+命中来源文件：study_notes.md、rag_intro.txt
+命中关键词：RAG、核心
+命中片段：
+1. study_notes.md：RAG 的核心是先查资料再回答
+2. rag_intro.txt：RAG 是一种让系统先检索资料再回答问题的方法
+最终回答：根据已检索到的资料，当前问题可以这样理解：RAG 的核心是先查资料再回答。依据主要来自：study_notes.md、rag_intro.txt 文件。
 ----------------------------------------
+
 用户问题：AI 为什么会产生幻觉？
 是否命中资料：是
-命中来源文件：ai_hallucination.txt、study_notes.md
-命中关键词：ai、幻觉
-匹配分数：study_notes.md=6、ai_hallucination.txt=4、ai_hallucination.txt=4
-最终回答：根据已检索到的资料，当前问题可以这样理解：AI 幻觉是指模型生成看似合理但没有依据的内容。依据主要来自：ai_hallucination.txt、study_notes.md 文件。
+命中来源文件：study_notes.md、ai_hallucination.txt
+命中关键词：AI、幻觉
+命中片段：
+1. study_notes.md：AI 幻觉是指模型生成看似合理但没有依据的内容
+2. ai_hallucination.txt：AI 胡说通常指模型生成了看起来合理但缺少事实依据的内容
+最终回答：根据已检索到的资料，当前问题可以这样理解：AI 幻觉是指模型生成看似合理但没有依据的内容。依据主要来自：study_notes.md、ai_hallucination.txt 文件。
 ----------------------------------------
+
 用户问题：结构力学研究什么？
 是否命中资料：是
 命中来源文件：civil_engineering.txt
-命中关键词：力学、力学研、力学研究、学研、学研究、构力、构力学、构力学研、构力学研究、研究、结构、结构力、结构力学、结构力学研、结构力学研究
-匹配分数：civil_engineering.txt=47、civil_engineering.txt=22、civil_engineering.txt=19
-最终回答：根据已检索到的资料，当前问题可以这样理解：结构力学研究梁、桁架、刚架等结构的力学行为。依据主要来自：civil_engineering.txt 文件。
+命中关键词：结构力学、研究
+命中片段：
+1. civil_engineering.txt：结构力学研究梁、桁架、刚架等结构的力学行为
+2. civil_engineering.txt：结构力学关注内力、位移、支座反力和稳定性
+最终回答：根据已检索到的资料，当前问题可以这样理解：结构力学研究梁、桁架、刚架等结构的力学行为，并关注内力、位移、支座反力和稳定性。依据主要来自：civil_engineering.txt 文件。
 ----------------------------------------
+
 用户问题：如何避免 AI 胡说？
 是否命中资料：是
-命中来源文件：ai_hallucination.txt
-命中关键词：ai、胡说、避免
-匹配分数：ai_hallucination.txt=9、ai_hallucination.txt=7、ai_hallucination.txt=7
-最终回答：根据已检索到的资料，当前问题可以这样理解：为了避免胡说，系统在找不到依据时应该拒答，而不是继续编造。依据主要来自：ai_hallucination.txt 文件。
+命中来源文件：ai_hallucination.txt、study_notes.md
+命中关键词：AI、胡说、避免、依据
+命中片段：
+1. ai_hallucination.txt：为了避免胡说，系统在找不到依据时应该拒答，而不是继续编造
+2. study_notes.md：防止 AI 胡说的关键是让回答有来源、有依据、可检查
+最终回答：根据已检索到的资料，当前问题可以这样理解：为了避免 AI 胡说，系统应该让回答有来源、有依据、可检查；找不到依据时应该拒答。依据主要来自：ai_hallucination.txt、study_notes.md 文件。
 ----------------------------------------
+
 用户问题：Python 能不能读取 PDF？
-是否命中资料：是
-命中来源文件：ai_hallucination.txt
-命中关键词：不能
-匹配分数：ai_hallucination.txt=3
-最终回答：根据已检索到的资料，当前问题可以这样理解：课程资料问答助手应该提示资料不足，不能根据当前资料回答。依据主要来自：ai_hallucination.txt 文件。
+是否命中资料：否
+命中来源文件：无命中资料
+命中关键词：Python、PDF
+命中片段：无
+最终回答：资料不足，不能根据当前资料回答，避免胡说。你可以尝试换一个更具体的问题，把相关资料放进 data 文件夹，或检查资料文件是否包含这个知识点。
 ----------------------------------------
 用户问题：RAG 的核心是什么？
 是否命中资料：是
@@ -51,27 +51,6 @@
 命中关键词：rag、核心
 匹配分数：study_notes.md=6、rag_intro.txt=4、rag_intro.txt=4
 最终回答：根据已检索到的资料，当前问题可以这样理解：RAG 的核心是先查资料再回答。依据主要来自：rag_intro.txt、study_notes.md 文件。
-----------------------------------------
-用户问题：AI 为什么会产生幻觉？
-是否命中资料：是
-命中来源文件：ai_hallucination.txt、study_notes.md
-命中关键词：ai、幻觉
-匹配分数：study_notes.md=6、ai_hallucination.txt=4、ai_hallucination.txt=4
-最终回答：根据已检索到的资料，当前问题可以这样理解：AI 幻觉是指模型生成看似合理但没有依据的内容。依据主要来自：ai_hallucination.txt、study_notes.md 文件。
-----------------------------------------
-用户问题：结构力学研究什么？
-是否命中资料：是
-命中来源文件：civil_engineering.txt
-命中关键词：力学、力学研、力学研究、学研、学研究、构力、构力学、构力学研、构力学研究、研究、结构、结构力、结构力学、结构力学研、结构力学研究
-匹配分数：civil_engineering.txt=47、civil_engineering.txt=22、civil_engineering.txt=19
-最终回答：根据已检索到的资料，当前问题可以这样理解：结构力学研究梁、桁架、刚架等结构的力学行为。依据主要来自：civil_engineering.txt 文件。
-----------------------------------------
-用户问题：如何避免 AI 胡说？
-是否命中资料：是
-命中来源文件：ai_hallucination.txt
-命中关键词：ai、胡说、避免
-匹配分数：ai_hallucination.txt=9、ai_hallucination.txt=7、ai_hallucination.txt=7
-最终回答：根据已检索到的资料，当前问题可以这样理解：为了避免胡说，系统在找不到依据时应该拒答，而不是继续编造。依据主要来自：ai_hallucination.txt 文件。
 ----------------------------------------
 用户问题：Python 能不能读取 PDF？
 是否命中资料：否
@@ -80,13 +59,6 @@
 匹配分数：无
 最终回答：资料不足，不能根据当前资料回答，避免胡说。
 ----------------------------------------
-用户问题：RAG 的核心是什么？
-是否命中资料：是
-命中来源文件：rag_intro.txt、study_notes.md
-命中关键词：rag、核心
-匹配分数：study_notes.md=6、rag_intro.txt=4、rag_intro.txt=4
-最终回答：根据已检索到的资料，当前问题可以这样理解：RAG 的核心是先查资料再回答。依据主要来自：rag_intro.txt、study_notes.md 文件。
-----------------------------------------
 用户问题：如何避免 AI 胡说？
 是否命中资料：是
 命中来源文件：ai_hallucination.txt
@@ -95,16 +67,9 @@
 最终回答：根据已检索到的资料，当前问题可以这样理解：为了避免胡说，系统在找不到依据时应该拒答，而不是继续编造。依据主要来自：ai_hallucination.txt 文件。
 ----------------------------------------
 用户问题：Python 能不能读取 PDF？
-是否命中资料：否
-命中来源文件：无命中资料
-命中关键词：无
-匹配分数：无
-最终回答：资料不足，不能根据当前资料回答，避免胡说。
-----------------------------------------
-用户问题：AI 为什么会产生幻觉？
 是否命中资料：是
-命中来源文件：ai_hallucination.txt、study_notes.md
-命中关键词：ai、幻觉
-匹配分数：study_notes.md=6、ai_hallucination.txt=4、ai_hallucination.txt=4
-最终回答：根据已检索到的资料，当前问题可以这样理解：AI 幻觉是指模型生成看似合理但没有依据的内容。依据主要来自：ai_hallucination.txt、study_notes.md 文件。
+命中来源文件：python_pdf.txt
+命中关键词：pdf、python、读取
+匹配分数：python_pdf.txt=13、python_pdf.txt=11、python_pdf.txt=11
+最终回答：根据已检索到的资料，当前问题可以这样理解：常见的 PDF 读取库包括 PyPDF2、pdfplumber、PyMuPDF 等。依据主要来自：python_pdf.txt 文件。
 ----------------------------------------
