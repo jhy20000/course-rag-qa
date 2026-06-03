@@ -2,31 +2,43 @@ import re
 from pathlib import Path
 
 
-# 项目根目录、资料目录和旧版 course.txt 路径。
+# 项目根目录、资料目录、旧版 course.txt 路径和问答历史路径。
 PROJECT_DIR = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_DIR / "data"
 COURSE_FILE = PROJECT_DIR / "course.txt"
 HISTORY_FILE = PROJECT_DIR / "history.txt"
 SUPPORTED_SUFFIXES = {".txt", ".md"}
 
-# 这些词经常出现在问题里，但不能代表真正的课程主题。
+# 停用词经常出现在问题里，但通常不能代表真正的检索主题。
 STOP_WORDS = {
     "什么",
+    "为什么",
     "怎么",
+    "如何",
     "这个",
     "那个",
     "一个",
-    "一种",
-    "哪些",
-    "是否",
+    "一下",
+    "请问",
     "可以",
-    "应该",
+    "能不能",
+    "不能",
+    "能",
+    "不",
     "的是",
-    "为什么",
-    "原因",
+    "了吗",
     "吗",
+    "呢",
+    "啊",
+    "了",
+    "的",
     "是",
+    "在",
+    "和",
+    "与",
+    "或",
 }
+KEEP_ENGLISH_KEYWORDS = {"rag", "ai", "pdf", "python"}
 
 
 def split_segments(text):
@@ -38,7 +50,7 @@ def split_segments(text):
 def load_documents():
     """读取资料文件。
 
-    v3.0 优先读取 data 文件夹下的所有 .txt 和 .md 文件；如果 data 中没有资料，
+    v4.0 优先读取 data 文件夹下的所有 .txt 和 .md 文件；如果 data 中没有资料，
     再回退读取旧版 course.txt，保留第一版功能。
     """
     documents = []
@@ -79,44 +91,66 @@ def build_segments(documents):
 def extract_keywords(question):
     """从问题中提取英文、数字和中文关键词。
 
-    英文和数字按连续单词提取；中文没有第三方分词库，所以使用 2 到 6 个字
-    的连续片段做简单关键词匹配，并过滤常见泛化词。
+    英文和数字按连续词提取；中文没有第三方分词库，所以用连续字符和
+    2 到 6 字短语片段做简单检索，并过滤停用词和无意义短词。
     """
     keywords = set()
 
-    # 先去掉常见疑问词，避免把“为什么会”“这个”等泛化表达当成关键词。
-    cleaned_question = re.sub(r"为什么|什么|怎么|这个|那个|是否|哪些|请问|会|吗|呢", "", question)
+    # 保留 RAG、AI、PDF、Python 这类英文关键词。
+    for word in re.findall(r"[A-Za-z0-9]+", question):
+        normalized = word.lower()
+        if len(normalized) >= 2 or normalized in KEEP_ENGLISH_KEYWORDS:
+            keywords.add(normalized)
 
-    # 提取英文和数字组成的连续词，例如 RAG、AI、Python3。
-    for word in re.findall(r"[A-Za-z0-9]+", cleaned_question):
-        keywords.add(word.lower())
-
-    # 提取中文连续文本，再切成短片段。
-    chinese_chunks = re.findall(r"[\u4e00-\u9fff]+", cleaned_question)
+    chinese_chunks = re.findall(r"[\u4e00-\u9fff]+", question)
     for chunk in chinese_chunks:
+        cleaned_chunk = chunk
+        for stop_word in STOP_WORDS:
+            cleaned_chunk = cleaned_chunk.replace(stop_word, "")
+
+        if len(cleaned_chunk) >= 2 and cleaned_chunk not in STOP_WORDS:
+            keywords.add(cleaned_chunk)
+
         for size in range(2, 7):
-            for start in range(0, len(chunk) - size + 1):
-                keyword = chunk[start : start + size]
-                if keyword not in STOP_WORDS:
+            for start in range(0, len(cleaned_chunk) - size + 1):
+                keyword = cleaned_chunk[start : start + size]
+                if len(keyword) >= 2 and keyword not in STOP_WORDS:
                     keywords.add(keyword)
 
     return keywords
 
 
 def score_segments(question, segments):
-    """统计每个资料片段命中的关键词数量，并按命中数量从高到低排序。"""
+    """计算每个资料片段的匹配分数，并按分数从高到低排序。
+
+    分数由三部分组成：命中关键词数量、关键词在片段中的出现次数、
+    关键词在来源文件名中的命中加分。
+    """
     keywords = extract_keywords(question)
     scored = []
 
     for segment in segments:
         content_lower = segment["content"].lower()
-        hit_keywords = [keyword for keyword in keywords if keyword in content_lower]
+        source_lower = segment["source"].lower()
+        hit_keywords = []
+        occurrence_count = 0
+        filename_bonus = 0
+
+        for keyword in keywords:
+            content_hits = content_lower.count(keyword)
+            source_hits = source_lower.count(keyword)
+            if content_hits or source_hits:
+                hit_keywords.append(keyword)
+                occurrence_count += content_hits
+                filename_bonus += source_hits
+
         if hit_keywords:
+            score = len(hit_keywords) * 2 + occurrence_count + filename_bonus
             scored.append(
                 {
                     "source": segment["source"],
                     "content": segment["content"],
-                    "score": len(hit_keywords),
+                    "score": score,
                     "hits": sorted(hit_keywords),
                 }
             )
@@ -128,19 +162,35 @@ def save_history(question, top_results, answer):
     """把每次问答记录追加保存到 history.txt。"""
     if top_results:
         sources = "、".join(sorted({item["source"] for item in top_results}))
+        hit_keywords = "、".join(sorted({keyword for item in top_results for keyword in item["hits"]}))
+        scores = "、".join(f"{item['source']}={item['score']}" for item in top_results)
+        has_match = "是"
     else:
         sources = "无命中资料"
+        hit_keywords = "无"
+        scores = "无"
+        has_match = "否"
 
     lines = [
+        f"用户问题：{question}",
+        f"是否命中资料：{has_match}",
+        f"命中来源文件：{sources}",
+        f"命中关键词：{hit_keywords}",
+        f"匹配分数：{scores}",
+        f"最终回答：{answer}",
         "----------------------------------------",
-        f"问题：{question}",
-        f"命中的资料来源：{sources}",
-        f"回答结果：{answer}",
         "",
     ]
-    HISTORY_FILE.write_text("", encoding="utf-8") if not HISTORY_FILE.exists() else None
     with HISTORY_FILE.open("a", encoding="utf-8") as file:
         file.write("\n".join(lines))
+
+
+def print_no_match_suggestions():
+    """资料不足时输出改问建议。"""
+    print("你可以尝试：")
+    print("- 换一个更具体的问题")
+    print("- 把相关资料放进 data 文件夹")
+    print("- 检查资料文件是否包含这个知识点")
 
 
 def answer_question(question, segments):
@@ -150,22 +200,29 @@ def answer_question(question, segments):
     if not results:
         answer = "资料不足，不能根据当前资料回答，避免胡说。"
         print(answer)
+        print()
+        print_no_match_suggestions()
         save_history(question, [], answer)
         return
 
     top_results = results[:3]
-    evidence_text = "；".join(item["content"] for item in top_results)
-    answer = f"根据资料，{top_results[0]['content']}。相关依据包括：{evidence_text}。"
+    source_text = "、".join(sorted({item["source"] for item in top_results}))
+    answer = (
+        f"根据已检索到的资料，当前问题可以这样理解：{top_results[0]['content']}。"
+        f"依据主要来自：{source_text} 文件。"
+    )
 
     print("命中的资料片段：")
     for index, item in enumerate(top_results, start=1):
         hits = "、".join(item["hits"])
-        print(f"{index}. 来源文件：{item['source']}")
+        print(f"{index}. 排名：{index}")
+        print(f"   来源文件：{item['source']}")
+        print(f"   匹配分数：{item['score']}")
         print(f"   命中关键词：{hits}")
-        print(f"   资料内容：{item['content']}")
+        print(f"   资料片段内容：{item['content']}")
 
     print()
-    print(f"基于资料的简短回答：{answer}")
+    print(answer)
     save_history(question, top_results, answer)
 
 
@@ -174,7 +231,7 @@ def main():
     documents = load_documents()
     segments = build_segments(documents)
 
-    print("课程资料防胡说问答助手 v3.0")
+    print("课程资料防胡说问答助手 v4.0")
     print(f"已加载资料文件数量：{len(documents)}")
     print(f"已切分资料片段数量：{len(segments)}")
     print("请输入问题；直接回车或输入 q 退出。")
